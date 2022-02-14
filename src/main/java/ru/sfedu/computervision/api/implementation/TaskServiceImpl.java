@@ -45,9 +45,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Mat task2(int numberOfChannel, String pathName, String imageName) {
-        conversionService.showImage(pathName + imageName);
+        imageService.showImageByPath(pathName + imageName);
         Mat mat = imageService.imgToMatByPath(numberOfChannel, pathName, imageName);
-        conversionService.matToBufferedImage(mat);
+        imageService.showImageByBufferedImage(conversionService.matToBufferedImage(mat));
         conversionService.saveMatToFile(pathName, mat);
         return mat;
     }

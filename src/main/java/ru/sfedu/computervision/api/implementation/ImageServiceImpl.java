@@ -1,9 +1,14 @@
 package ru.sfedu.computervision.api.implementation;
 
+import org.opencv.core.Point;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import ru.sfedu.computervision.api.ImageService;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class ImageServiceImpl implements ImageService {
 
@@ -72,13 +77,13 @@ public class ImageServiceImpl implements ImageService {
     public Mat geometryChangeImage(Mat enterImage, Mat outImage, int angle, boolean isCut) {
         Point center = new Point(enterImage.width() >> 1, enterImage.height() >> 1);
         Mat rotationMat = Imgproc.getRotationMatrix2D(center, angle, 1);
-        Imgproc.warpAffine(enterImage, outImage, rotationMat,new Size(enterImage.width(), enterImage.height()),
-                Imgproc.INTER_LINEAR, Core.BORDER_TRANSPARENT,new Scalar(0,0,0,255));
+        Imgproc.warpAffine(enterImage, outImage, rotationMat, new Size(enterImage.width(), enterImage.height()),
+                Imgproc.INTER_LINEAR, Core.BORDER_TRANSPARENT, new Scalar(0, 0, 0, 255));
         return outImage;
     }
 
     @Override
-    public Mat warpImage(Mat image,int x,int y) {
+    public Mat warpImage(Mat image, int x, int y) {
         MatOfPoint2f src = new MatOfPoint2f(
                 new Point(0, 0),
                 new Point(image.cols(), 0),
@@ -97,11 +102,56 @@ public class ImageServiceImpl implements ImageService {
         return res;
     }
 
+    @Override
+    public void showImageByPath(String path) {
+        ImageIcon icon = new ImageIcon(path);
+        frame(icon);
+    }
+
+    @Override
+    public void showImageByBufferedImage(BufferedImage bufferedImage) {
+        ImageIcon icon = new ImageIcon(bufferedImage);
+        frame(icon);
+    }
+
+    @Override
+    public Mat baseBlur(Mat src, Mat dst, Size ksize) {
+        Imgproc.blur(src, dst, ksize, new Point(-1, -1));
+        return src;
+    }
+
+    @Override
+    public Mat GaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY, int borderType) {
+        Imgproc.GaussianBlur(src, dst, ksize, sigmaX, sigmaY,borderType);
+        return src;
+    }
+
+    @Override
+    public Mat medianBlur(Mat src, Mat dst, int ksize) {
+        Imgproc.medianBlur(src, dst, ksize);
+        return src;
+    }
+
+    @Override
+    public Mat bilateralFilter(Mat src, Mat dst, int d, double sigmaColor, double sigmaSpace, int borderType) {
+        Imgproc.bilateralFilter(src, dst, d,sigmaColor,sigmaSpace,borderType);
+        return src;
+    }
+
+    private void frame(ImageIcon icon) {
+        JFrame frame = new JFrame();
+        frame.setLayout(new FlowLayout());
+        frame.setSize(frame.getToolkit().getScreenSize().width - 300, frame.getToolkit().getScreenSize().height - 350);
+        JLabel lbl = new JLabel();
+        lbl.setIcon(icon);
+        frame.add(lbl);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
     public Mat imgToMatByPath(int numberOfChannel, String pathName, String imageName) {
         Mat image = Imgcodecs.imread(pathName + imageName);
         return imgToMat(numberOfChannel, image);
     }
-
-
 
 }

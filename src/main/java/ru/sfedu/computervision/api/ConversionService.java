@@ -9,6 +9,4 @@ public interface ConversionService {
     void saveMatToFile(String filePath, Mat img);
 
     BufferedImage matToBufferedImage(Mat image);
-
-    void showImage(String path);
 }
