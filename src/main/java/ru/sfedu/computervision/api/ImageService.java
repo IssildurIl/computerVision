@@ -29,7 +29,7 @@ public interface ImageService {
 
     Mat baseBlur(Mat src, Mat dst, Size ksize);
 
-    Mat GaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY, int borderType);
+    Mat gaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY, int borderType);
 
     Mat medianBlur(Mat src, Mat dst, int ksize);
 

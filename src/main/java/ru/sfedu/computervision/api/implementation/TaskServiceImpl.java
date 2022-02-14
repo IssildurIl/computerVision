@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import ru.sfedu.computervision.Constants;
 import ru.sfedu.computervision.Constants.OSType;
 import ru.sfedu.computervision.api.ConversionService;
@@ -44,11 +46,33 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Mat task2(int numberOfChannel, String pathName, String imageName) {
+    public void task2(int numberOfChannel, String pathName, String imageName) {
         imageService.showImageByPath(pathName + imageName);
         Mat mat = imageService.imgToMatByPath(numberOfChannel, pathName, imageName);
         imageService.showImageByBufferedImage(conversionService.matToBufferedImage(mat));
-        conversionService.saveMatToFile(pathName, mat);
-        return mat;
+        conversionService.saveMatToFile(imageName, mat);
+    }
+
+    @Override
+    public void task4(String path, int dx, int dy) {
+        Size size = new Size(dx, dy);
+        Mat image = Imgcodecs.imread(path);
+        Mat newImage = new Mat();
+
+        Mat mat = imageService.baseBlur(image, image, size);
+        imageService.showImageByBufferedImage(conversionService.matToBufferedImage(mat));
+        conversionService.saveMatToFile("Blur", mat);
+
+        Mat matGaussian = imageService.gaussianBlur(mat, mat, size, 90, 90, 2);
+        imageService.showImageByBufferedImage(conversionService.matToBufferedImage(matGaussian));
+        conversionService.saveMatToFile("Gaussian", matGaussian);
+
+        Mat median = imageService.medianBlur(matGaussian, matGaussian, dx);
+        imageService.showImageByBufferedImage(conversionService.matToBufferedImage(median));
+        conversionService.saveMatToFile("Median", median);
+
+        Mat bilateral = imageService.bilateralFilter(median, newImage, 15, 80, 80, Core.BORDER_DEFAULT);
+        imageService.showImageByBufferedImage(conversionService.matToBufferedImage(bilateral));
+        conversionService.saveMatToFile("Bilateral", bilateral);
     }
 }

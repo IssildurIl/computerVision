@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 public interface ConversionService {
 
-    void saveMatToFile(String filePath, Mat img);
+    void saveMatToFile(String imageName, Mat img);
 
     BufferedImage matToBufferedImage(Mat image);
 }

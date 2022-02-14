@@ -22,10 +22,7 @@ public class Constants {
         }
     }
 
-    public enum Status {
-        Error
-    }
-
-    public static final String PATH_TO_NATIVE_LIB_LINUX = "";
+    public static final String PATH_TO_NATIVE_LIB_LINUX = "lin_path";
     public static final String PATH_TO_NATIVE_LIB_WIN = "win_path";
+    public static final String IMAGE_PATH = "D:/computerVision/src/main/resources/images";
 }

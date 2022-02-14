@@ -75,8 +75,19 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Mat geometryChangeImage(Mat enterImage, Mat outImage, int angle, boolean isCut) {
-        Point center = new Point(enterImage.width() >> 1, enterImage.height() >> 1);
-        Mat rotationMat = Imgproc.getRotationMatrix2D(center, angle, 1);
+        Point center = new Point(enterImage.width() / 2.0, enterImage.height() / 2.0);
+        double scale = 1;
+        if (isCut) {
+            double size = Math.sqrt(enterImage.width() * enterImage.width() + enterImage.height() * enterImage.height());
+            double scaleX = enterImage.width() / size;
+            double scaleY = enterImage.height() / size;
+            scale = Math.min(scaleX, scaleY);
+        }
+        Mat rotationMat = Imgproc.getRotationMatrix2D(
+                center,
+                angle,
+                scale
+        );
         Imgproc.warpAffine(enterImage, outImage, rotationMat, new Size(enterImage.width(), enterImage.height()),
                 Imgproc.INTER_LINEAR, Core.BORDER_TRANSPARENT, new Scalar(0, 0, 0, 255));
         return outImage;
@@ -121,8 +132,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Mat GaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY, int borderType) {
-        Imgproc.GaussianBlur(src, dst, ksize, sigmaX, sigmaY,borderType);
+    public Mat gaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY, int borderType) {
+        Imgproc.GaussianBlur(src, dst, ksize, sigmaX, sigmaY, borderType);
         return src;
     }
 
@@ -134,9 +145,13 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Mat bilateralFilter(Mat src, Mat dst, int d, double sigmaColor, double sigmaSpace, int borderType) {
-        Imgproc.bilateralFilter(src, dst, d,sigmaColor,sigmaSpace,borderType);
-        return src;
+        Imgproc.bilateralFilter(src, dst, d, sigmaColor, sigmaSpace, borderType);
+        return dst;
     }
+
+//    public void morfologyTest(Mat src, Mat dst, Size ksize) {
+//
+//    }
 
     private void frame(ImageIcon icon) {
         JFrame frame = new JFrame();

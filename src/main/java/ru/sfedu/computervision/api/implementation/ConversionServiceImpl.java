@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import ru.sfedu.computervision.Constants;
 import ru.sfedu.computervision.api.ConversionService;
 
 import java.awt.image.BufferedImage;
@@ -13,9 +14,9 @@ public class ConversionServiceImpl implements ConversionService {
 
     private static final Logger log = LogManager.getLogger(ConversionServiceImpl.class);
 
-    public void saveMatToFile(String filePath, Mat img) {
+    public void saveMatToFile(String imageName, Mat img) {
         try {
-            final String modFilePath = buildImageName(filePath);
+            final String modFilePath = buildImageName(Constants.IMAGE_PATH,imageName);
             Imgcodecs.imwrite(modFilePath, img);
         } catch (Exception e) {
             log.debug("only .JPG and .PNG files are supported");
@@ -37,8 +38,8 @@ public class ConversionServiceImpl implements ConversionService {
         return bufferedImage;
     }
 
-    private String buildImageName(String base) {
-        return String.format("%s%d.jpg", base, System.nanoTime());
+    private String buildImageName(String base, String name) {
+        return String.format("%s/%s.jpg", base, name);
     }
 
 
