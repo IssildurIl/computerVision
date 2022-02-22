@@ -1,20 +1,27 @@
 package ru.sfedu.computervision.api.implementation;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
-import ru.sfedu.computervision.api.ConversionService;
 import ru.sfedu.computervision.api.ImageService;
 
 public class Task5Test {
-
-    private static final Logger log = LogManager.getLogger(Task2Test.class);
     TaskServiceImpl taskService = new TaskServiceImpl();
     ImageService imageService = new ImageServiceImpl();
-    ConversionService conversionService = new ConversionServiceImpl();
+    Mat mat = Imgcodecs.imread("D:/computerVision/images/banan.jpg");
 
+    @Test
+    void task5toFill() {
+        imageService.toFill(3, mat);
+    }
 
+    @Test
+    void task5toPyr() {
+        imageService.toPyr();
+    }
 
+    @Test
+    void task5toSquare(){
+        imageService.toSquare(mat);
+    }
 }

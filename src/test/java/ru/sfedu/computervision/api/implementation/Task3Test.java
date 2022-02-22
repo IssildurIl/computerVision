@@ -10,6 +10,7 @@ import ru.sfedu.computervision.api.ImageService;
 
 public class Task3Test {
     private static final Logger log = LogManager.getLogger(Task2Test.class);
+    TaskServiceImpl taskService = new TaskServiceImpl();
     ImageService imageService = new ImageServiceImpl();
     ConversionService conversionService = new ConversionServiceImpl();
     Mat mopsMat = Imgcodecs.imread("D:/computerVision/images/mops.jpg");

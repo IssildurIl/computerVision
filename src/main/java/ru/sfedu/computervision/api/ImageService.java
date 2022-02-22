@@ -39,6 +39,12 @@ public interface ImageService {
 
     void morphingRect(Mat defaultMat);
 
+    void toFill(Integer initVal, Mat defaultMat);
+
+    void toPyr();
+
+    void toSquare(Mat mat);
+
     void showImageByPath(String path);
 
     void showImageByBufferedImage(BufferedImage bufferedImage);
