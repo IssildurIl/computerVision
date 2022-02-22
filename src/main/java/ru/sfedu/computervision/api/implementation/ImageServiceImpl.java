@@ -4,6 +4,7 @@ import org.opencv.core.Point;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import ru.sfedu.computervision.api.ConversionService;
 import ru.sfedu.computervision.api.ImageService;
 
 import javax.swing.*;
@@ -11,6 +12,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageServiceImpl implements ImageService {
+
+    private static final ConversionService convertionService = new ConversionServiceImpl();
 
     @Override
     public Mat imgToMat(int numberOfChannel, Mat image) {
@@ -149,9 +152,45 @@ public class ImageServiceImpl implements ImageService {
         return dst;
     }
 
-//    public void morfologyTest(Mat src, Mat dst, Size ksize) {
-//
-//    }
+    @Override
+    public void morphingRect(Mat defaultMat) {
+        double[] sizes = {3, 5, 7, 9, 13, 15};
+        for (double size : sizes) {
+            Mat morphEllipse = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(size, size));
+
+            Mat dst1 = defaultMat.clone();
+            Imgproc.dilate(defaultMat, dst1, morphEllipse);
+            convertionService.saveMatToFile("mrf_ellipse_rect"+size, dst1);
+
+            Mat dst1_1 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_1, Imgproc.MORPH_GRADIENT, morphEllipse);
+            convertionService.saveMatToFile("mrf_gradient_rect"+size, dst1_1);
+
+            Mat dst1_2 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_2, Imgproc.MORPH_BLACKHAT, morphEllipse);
+            convertionService.saveMatToFile("mrf_blackhat_rect"+size, dst1_2);
+        }
+    }
+
+    @Override
+    public void morphingEllipse(Mat defaultMat) {
+        double[] sizes = {3, 5, 7, 9, 13, 15};
+        for (double size : sizes) {
+            Mat morphEllipse = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(size, size));
+
+            Mat dst1 = defaultMat.clone();
+            Imgproc.dilate(defaultMat, dst1, morphEllipse);
+            convertionService.saveMatToFile("mrf_ellipse_el_"+size, dst1);
+
+            Mat dst1_1 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_1, Imgproc.MORPH_GRADIENT, morphEllipse);
+            convertionService.saveMatToFile("mrf_gradient_el"+size, dst1_1);
+
+            Mat dst1_2 = defaultMat.clone();
+            Imgproc.morphologyEx(defaultMat, dst1_2, Imgproc.MORPH_BLACKHAT, morphEllipse);
+            convertionService.saveMatToFile("mrf_blackhat_el"+size, dst1_2);
+        }
+    }
 
     private void frame(ImageIcon icon) {
         JFrame frame = new JFrame();

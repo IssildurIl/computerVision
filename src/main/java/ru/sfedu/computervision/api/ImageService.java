@@ -35,6 +35,10 @@ public interface ImageService {
 
     Mat bilateralFilter(Mat src, Mat dst, int d, double sigmaColor, double sigmaSpace, int borderType);
 
+    void morphingEllipse(Mat defaultMat);
+
+    void morphingRect(Mat defaultMat);
+
     void showImageByPath(String path);
 
     void showImageByBufferedImage(BufferedImage bufferedImage);

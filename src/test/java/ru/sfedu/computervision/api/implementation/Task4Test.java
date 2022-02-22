@@ -17,6 +17,7 @@ public class Task4Test {
     ImageService imageService = new ImageServiceImpl();
     ConversionService conversionService = new ConversionServiceImpl();
     Mat jakalMat = Imgcodecs.imread("D:/computerVision/images/shakali.jpg");
+    Mat reclamaMat = Imgcodecs.imread("D:/computerVision/images/orex.jpg");
 
     @Test
     void task4BaseBlur() {
@@ -52,5 +53,19 @@ public class Task4Test {
     @Test
     void task4Blur() {
         taskService.task4("D:/computerVision/images/mops.jpg", 3, 3);
+    }
+
+    @Test
+    void task5MorfEllipse() {
+        String name = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        imageService.morphingEllipse(reclamaMat);
+    }
+
+    @Test
+    void task5MorfRect() {
+        String name = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        imageService.morphingRect(reclamaMat);
     }
 }
