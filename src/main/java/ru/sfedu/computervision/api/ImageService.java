@@ -4,6 +4,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Size;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public interface ImageService {
 
@@ -41,13 +42,16 @@ public interface ImageService {
 
     void toFill(Integer initVal, Mat defaultMat);
 
-    void toPyr();
+    Mat pyramidDown(Mat srcImage, int amount);
 
-    void toSquare(Mat mat);
+    Mat pyramidUp(Mat srcImage, int amount);
+
+    List<Mat> toSquare(Mat image, double width, double height);
 
     void showImageByPath(String path);
 
     void showImageByBufferedImage(BufferedImage bufferedImage);
 
+    void convertCanny(Mat srcImage);
 
 }

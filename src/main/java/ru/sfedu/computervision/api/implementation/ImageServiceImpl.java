@@ -11,10 +11,11 @@ import ru.sfedu.computervision.api.ImageService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static org.opencv.core.CvType.CV_8UC3;
 
@@ -211,23 +212,32 @@ public class ImageServiceImpl implements ImageService {
         convertionService.saveMatToFile("floodFill", defaultMat);
     }
 
-    public void toPyr()  {
-        Mat defaultMat = noiseMat(350, 350);
-
-        Mat mask = new Mat();
-        Imgproc.pyrDown(defaultMat, mask);
-        convertionService.saveMatToFile("mask_pyrDown", mask);
-
-        Imgproc.pyrUp(mask, mask);
-        convertionService.saveMatToFile("mask_pyrUp", mask);
-
-        Core.subtract(defaultMat, mask, mask);
-        convertionService.saveMatToFile("mask_subtract", mask);
+    public Mat pyramidDown(Mat srcImage, int amount) {
+        Mat result = new Mat();
+        if (amount > 0) {
+            Imgproc.pyrDown(srcImage, result);
+        }
+        for (int i = 1; i < amount; i++) {
+            Imgproc.pyrDown(result, result);
+        }
+        return result;
     }
 
-    public void toSquare(Mat defaultMat){
+    public Mat pyramidUp(Mat srcImage, int amount) {
+        Mat result = new Mat();
+        if (amount > 0) {
+            Imgproc.pyrUp(srcImage, result);
+        }
+        for (int i = 1; i < amount; i++) {
+            Imgproc.pyrUp(result, result);
+        }
+        return result;
+    }
+
+
+    public List<Mat> toSquare(Mat image, double width, double height){
         Mat grayImage = new Mat();
-        Imgproc.cvtColor(defaultMat, grayImage, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
         convertionService.saveMatToFile("toSquare_grey_image", grayImage);
 
         Mat denoisingImage = new Mat();
@@ -265,24 +275,19 @@ public class ImageServiceImpl implements ImageService {
         Imgproc.findContours(dilatedImage, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
         contours.sort(Collections.reverseOrder(Comparator.comparing(Imgproc::contourArea)));
-        for (MatOfPoint contour : contours.subList(0, 1)) {
-            MatOfPoint2f point2f = new MatOfPoint2f();
-            MatOfPoint2f approxContour2f = new MatOfPoint2f();
-            MatOfPoint approxContour = new MatOfPoint();
-            contour.convertTo(point2f, CvType.CV_32FC2);
-            double arcLength = Imgproc.arcLength(point2f, true);
-            Imgproc.approxPolyDP(point2f, approxContour2f, 0.03 * arcLength, true);
-            approxContour2f.convertTo(approxContour, CvType.CV_32S);
-            Rect rect = Imgproc.boundingRect(approxContour);
-            double ratio = (double) rect.height / rect.width;
-            if (Math.abs(0.3 - ratio) > 0.15) {
-                continue;
-            }
-            Mat submat = defaultMat.submat(rect);
-            Imgproc.resize(submat, submat, new Size(400, 400 * ratio));
-            convertionService.saveMatToFile("toSquare_submat_image", submat);
-        }
-
+        return contours.stream().map(contour -> {
+                    MatOfPoint2f point2f = new MatOfPoint2f();
+                    MatOfPoint2f approxContour2f = new MatOfPoint2f();
+                    MatOfPoint approxContour = new MatOfPoint();
+                    contour.convertTo(point2f, CvType.CV_32FC2);
+                    double arcLength = Imgproc.arcLength(point2f, true);
+                    Imgproc.approxPolyDP(point2f, approxContour2f, 0.03 * arcLength, true);
+                    approxContour2f.convertTo(approxContour, CvType.CV_32S);
+                    Rect rect = Imgproc.boundingRect(approxContour);
+                    return image.submat(rect);
+                })
+                .filter(mat -> Math.abs(mat.height() - height) < 15 && Math.abs(mat.width() - width) < 15)
+                .collect(Collectors.toList());
     }
 
     private void frame(ImageIcon icon) {
@@ -307,4 +312,20 @@ public class ImageServiceImpl implements ImageService {
         Core.add(noiseMat, noiseMat, noiseMat);
         return noiseMat;
     }
+
+    public void convertCanny(Mat srcImage){
+        Mat grayImage = new Mat();
+        Imgproc.cvtColor(srcImage, grayImage, Imgproc.COLOR_BGR2GRAY);
+        Mat detectedEdges = new Mat();
+        Imgproc.blur(grayImage, detectedEdges, new Size(3, 3));
+        Mat thresholdImage = new Mat();
+        double threshold = Imgproc.threshold(grayImage, thresholdImage, 0, 255, Imgproc.THRESH_OTSU);
+        Imgproc.Canny(detectedEdges, detectedEdges, threshold, threshold * 3);
+        convertionService.saveMatToFile("convertCanny_modified", detectedEdges);
+    }
+
+    public void search(){
+
+    }
+
 }
